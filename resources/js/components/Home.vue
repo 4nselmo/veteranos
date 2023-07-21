@@ -124,7 +124,7 @@
 
         atualizarJogador()
         {
-          const myModal = new bootstrap.Modal(document.getElementById('jogadorModal'));
+          // const myModal = new bootstrap.Modal(document.getElementById('jogadorModal'));
           
           if(!document.getElementById('nome').value)
           {
@@ -145,13 +145,13 @@
             
             jQuery.post('atualizarJogador', data, res  => {
               this.jogadores = res;
-              $('#jogadorModal').modal('hide');
+              jQuery('#jogadorModal').modal('hide');
               this.mensagemAlertaSucesso = 'Atualizado com sucesso!';
                 $('#toastAlertSuccess').show();
                 setTimeout(function(){
                   $('#toastAlertSuccess').hide();
                   this.mensagemAlertaSucesso = '';
-              }, 5000); 
+              }, 1000); 
             });
           }
         },
