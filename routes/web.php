@@ -24,4 +24,6 @@ Route::get('getGolsJogador', 'App\Http\Controllers\HomeController@getGolsJogador
 Route::post('storeGol', 'App\Http\Controllers\HomeController@storeGol');
 Route::post('updateGol', 'App\Http\Controllers\HomeController@updateGol');
 Route::get('getEstatisticas', 'App\Http\Controllers\HomeController@getEstatisticas');
+Route::post('deleteJogador', 'App\Http\Controllers\HomeController@deleteJogador');
+Route::post('deleteGols', 'App\Http\Controllers\HomeController@deleteGols');
 

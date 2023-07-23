@@ -47,16 +47,24 @@ class HomeController extends Controller
             $jogador->gols = $jogador_estatistica->gols;
             $jogador->gols_sofridos = $jogador_estatistica->gols_sofridos;
             $jogador->gol_contra = $jogador_estatistica->gol_contra;
+            $jogador->participacoes = $this->verificaParticipacao($jogador->id);
         }
         
         return $jogadores->sortByDesc('gols')->values();
     }
 
+    function verificaParticipacao($jogador_id) {
+        $jogador_gols = JogadorGol::where('jogador_id', $jogador_id)->count();
+        return $jogador_gols;
+    }
+
     public function getJogadorEstatisticas($jogador_id, $temporada_id) {
-        $jogador_gols = JogadorGol::select(DB::raw('sum(gols) as gols, sum(gols_sofridos) as gols_sofridos, sum(gol_contra) as gol_contra'))
+        $jogador_gols = JogadorGol::select(DB::raw('count(id) as participacoes, sum(gols) as gols, sum(gols_sofridos) as gols_sofridos, sum(gol_contra) as gol_contra'))
         ->where('jogador_id', $jogador_id);
+
         if($temporada_id)
             $jogador_gols = $jogador_gols->where('temporada_id', $temporada_id);
+
         $jogador_gols = $jogador_gols->first();
 
         return $jogador_gols;
@@ -270,5 +278,28 @@ class HomeController extends Controller
         else
             $gols = $quauntidadeGolsMarcados->gols;
         return $gols;
+    }
+
+    public function deleteJogador(Request $request)
+    {
+        $jogador = Jogador::find($request->jogadorId);
+
+        $jogador_gols = JogadorGol::where('jogador_id', $request->jogadorId);
+        if($jogador_gols->get())
+            $jogador_gols->delete();
+        
+        $jogador->delete();
+
+        return $this->getJogadores($request);
+    }
+
+    function deleteGols(Request $request) {
+        $jogador_gols = JogadorGol::find($request->jogadorGolId);
+        $jogador_gols->delete();
+
+        $data = new class{};
+        $data->jogador_gols = $this->getGolsJogador($request);
+        $data->jogadores = $this->getJogadores($request);
+        return response()->json($data);
     }
 }

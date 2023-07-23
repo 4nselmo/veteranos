@@ -13,7 +13,9 @@
           estatisticas:[],
           temporada_estatistica_id:'',
           mensagemAlerta: '',
-          mensagemAlertaSucesso:''
+          mensagemAlertaSucesso:'',
+          jogadorGolId:'',
+          disable_store:false
 
           }
       },
@@ -107,7 +109,8 @@
           {
             const data={
               _token: $('meta[name="csrf-token"]').attr('content'),
-              nome: document.getElementById('nome').value
+              nome: document.getElementById('nome').value,
+              temporada_id: this.temporada
             }
 
             jQuery.post('salvarJogador',  data, res  => {
@@ -123,9 +126,7 @@
         },
 
         atualizarJogador()
-        {
-          // const myModal = new bootstrap.Modal(document.getElementById('jogadorModal'));
-          
+        {          
           if(!document.getElementById('nome').value)
           {
             this.mensagemAlerta = 'O campo Nome deve ser preenchido!';
@@ -140,7 +141,8 @@
             const data = {
               _token: $('meta[name="csrf-token"]').attr('content'),
               id:this.jogador.id,
-              nome: document.getElementById('nome').value
+              nome: document.getElementById('nome').value,
+              temporada_id: this.temporada
             }
             
             jQuery.post('atualizarJogador', data, res  => {
@@ -197,8 +199,29 @@
           document.getElementById('temporada_gols_id').value = jogadorGols.temporada_id;
         },
 
+        deleteGols(){
+          const data = {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            jogadorGolId: this.jogadorGolId,
+            jogadorId: this.jogadorId,
+            temporada_id: this.temporada
+          }
+          jQuery.post('deleteGols', data, res =>{
+            this.jogadores = res.jogadores;
+            this.jogadorGols = res.jogador_gols;
+            this.mensagemAlertaSucesso = 'Deletado com sucesso!';
+            $('#toastAlertSuccess').show();
+            setTimeout(function(){
+              $('#toastAlertSuccess').hide();
+              this.mensagemAlertaSucesso = '';
+            }, 5000);
+            $('#modalConfirmDeleteGols').modal('hide');
+          })
+        },
+
         storeGol()
         {
+          this.disable_store = true;
           var data = this.validator();
           if (data == false)
             return false;
@@ -210,6 +233,8 @@
             document.getElementById('equipe').value = '';
             document.getElementById('data').value = '';
             document.getElementById('golsSofridos').value = '';
+            document.getElementById('temporada_gols_id').value = '';
+            this.disable_store = false;
             this.mensagemAlertaSucesso = 'Salvo com sucesso!';
             $('#toastAlertSuccess').show();
             setTimeout(function(){
@@ -221,6 +246,7 @@
 
         updateGol()
         {
+          this.disable_store = true;
           var data = this.validator();
           if (data == false)
             return false;
@@ -232,7 +258,9 @@
             document.getElementById('equipe').value = '';
             document.getElementById('data').value = '';
             document.getElementById('golsSofridos').value = '';
+            document.getElementById('temporada_gols_id').value = '';
             this.jogadorGolId = '';
+            this.disable_store = false;
             this.mensagemAlertaSucesso = 'Atualizado com sucesso!';
             $('#toastAlertSuccess').show();
             setTimeout(function(){
@@ -252,6 +280,7 @@
               $('#toastAlert').hide();
               this.mensagemAlerta = '';
             }, 5000);  
+            this.disable_store = false;
             return false;
           }
 
@@ -263,6 +292,7 @@
               $('#toastAlert').hide();
               this.mensagemAlerta = '';
             }, 5000);  
+            this.disable_store = false;
             return false;
           }
 
@@ -274,6 +304,7 @@
               $('#toastAlert').hide();
               this.mensagemAlerta = '';
             }, 5000);  
+            this.disable_store = false;
             return false;
           }
 
@@ -285,6 +316,7 @@
               $('#toastAlert').hide();
               this.mensagemAlerta = '';
             }, 5000);  
+            this.disable_store = false;
             return false;
           }
 
@@ -300,6 +332,46 @@
           };
 
           return data;
+        },
+
+        deleteJogador()
+        {
+          const data = {
+            _token: $('meta[name="csrf-token"]').attr('content'),
+            jogadorId: this.jogadorId,
+            temporada_id: this.temporada
+          }
+          jQuery.post('deleteJogador', data, res =>{
+            this.jogadores = res;
+            this.mensagemAlertaSucesso = 'Deletado com sucesso!';
+            $('#toastAlertSuccess').show();
+            setTimeout(function(){
+              $('#toastAlertSuccess').hide();
+              this.mensagemAlertaSucesso = '';
+            }, 5000);
+            this.jogadorId = '';
+            $('#modalConfirm').modal('hide');
+          })
+        },
+
+        deleteConfirmacao(jogadorId)
+        {
+          this.jogadorId = jogadorId
+          $('#modalConfirm').modal('show');
+          
+          $('#modalConfirm').on('hidden.bs.modal', function(e){
+            this.jogadorId = '';
+          });
+        },
+
+        modalConfirmDeleteGols(jogadorGolId)
+        {
+          this.jogadorGolId = jogadorGolId
+          $('#modalConfirmDeleteGols').modal('show');
+          
+          $('#modalConfirmDeleteGols').on('hidden.bs.modal', function(e){
+            this.jogadorGolId = '';
+          });
         },
 
       },
@@ -340,16 +412,17 @@
       </span>
       </div>
   </div>
-
+  <br>
   <div class="row">
     <div class="col col-lg-3">
-        <label for="temporadas" class="col-form-label">Temporadas</label>
+        <label for="temporadas" class="col-form-label" style="padding: 2%;">Temporadas</label>
         <select class="form-select" id="temporada" aria-label="Default select example" v-model="temporada">
           <option value="" selected>Selecione a temporada</option>
           <option v-for="temporada in temporadas" :value="temporada.id" :key="temporada.id">{{temporada.nome}}</option>
         </select>
     </div>
   </div>
+  <br>
 
   <div class="row"> 
     <div class="col col-lg-12">
@@ -374,7 +447,10 @@
                     <td>{{jogador.gol_contra?jogador.gol_contra:'-'}}</td>
                     <td>
                       <a style="cursor: pointer;" v-on:click="openModalJogador(jogador)"><i class="bi bi-pencil-fill" title="Editar"></i></a>
-                      <a style="cursor: pointer;" v-on:click="deleteConfirmacao(jogador.id)"><i class="bi bi-trash3-fill" title="Excluir"></i></a>
+                      <a>
+                        <i v-if="jogador.participacoes" class="bi bi-trash3-fill jogador_excluir_not" title="Excluir"></i>
+                        <i v-else v-on:click="deleteConfirmacao(jogador.id)" class="bi bi-trash3-fill jogador_excluir"  title="Excluir"></i>
+                      </a>
                       <a style="cursor: pointer;" v-on:click="openModalGols(jogador.id)"><i class="bi bi-person-fill-add" title="Adicionar Gols"></i></a>
                     </td>
                 </tr>
@@ -523,7 +599,7 @@
                   <td>{{gols.data}}</td>
                   <th>
                     <a style="cursor: pointer;" v-on:click="editGols(gols)"><i class="bi bi-pencil-fill" title="Editar"></i></a>
-                    <a style="cursor: pointer;" v-on:click="exluir()"><i class="bi bi-trash3-fill" title="Excluir"></i></a>
+                    <a style="cursor: pointer;" v-on:click="modalConfirmDeleteGols(gols.id)"><i class="bi bi-trash3-fill" title="Excluir"></i></a>
                   </th>
                 </tr>
               </tbody>
@@ -532,7 +608,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-          <button type="button" class="btn btn-primary" v-on:click="jogadorGolId?updateGol():storeGol()">Salvar</button>
+          <button type="button" class="btn btn-primary" :disabled="disable_store" v-on:click="jogadorGolId?updateGol():storeGol()">Salvar</button>
         </div>
       </div>
     </div>
@@ -553,7 +629,39 @@
           </div>
         </div>
       </div>
-      </div>
+  </div>
+
+  <div class="modal fade" id="modalConfirm" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+              </div>
+              <div class="modal-body" style="text-align: center;">
+                Deseja realmente deletar esse jogador?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="limpar()">Não</button>
+                <button type="button" class="btn btn-primary" v-on:click="deleteJogador">Sim</button>
+              </div>
+            </div>
+          </div>
+  </div>
+
+  <div class="modal fade" id="modalConfirmDeleteGols" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+              <div class="modal-header">
+              </div>
+              <div class="modal-body" style="text-align: center;">
+                Deseja realmente deletar esses gols?
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" v-on:click="limpar()">Não</button>
+                <button type="button" class="btn btn-primary" v-on:click="deleteGols()">Sim</button>
+              </div>
+            </div>
+          </div>
+  </div>
 </template>
 <style scoped>
     .botoes{
@@ -577,5 +685,11 @@
 
     .golsModal{
       height: 1000px;
+    }
+    .jogador_excluir_not{
+      color: #ccc;
+    }
+    .jogador_excluir{
+      cursor: pointer;
     }
 </style>
