@@ -130,6 +130,6 @@
     }
     .equipes{
         font-weight: bold;
-    }
+    } 
 
 </style>
