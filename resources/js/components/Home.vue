@@ -374,6 +374,13 @@
           });
         },
 
+        listaGolsPdf(){
+           let data = {
+              temporada_id: this.temporada
+            }
+            window.open('listaGolsPdf?'+ $.param(data)); 
+        },
+
       },
 
       watch:
@@ -400,22 +407,25 @@
           <h3>Veteranos</h3>
       </div>
       <div class="col-lg-10" style="text-align: right">
-          <span class="botoes">
+        <span class="botoes">
           <button  type = "button" class = "btn btn-primary" id="myInput" v-on:click="openModalJogador()">
           NOVO JOGADOR
           </button>
-      </span>
-      <span class="botoes">
+        </span>
+        <span class="botoes">
           <button  type = "button" class="btn btn-primary" id="myInput" v-on:click="openModalEstatisticas()">
           ESTATISTICAS
           </button>
-      </span>
+        </span>
+        <span class="botoes">
+          <i class="bi bi-filetype-pdf" title="Exportar PDF" v-on:click="listaGolsPdf()"></i>
+        </span>
       </div>
   </div>
   <br>
   <div class="row">
     <div class="col col-lg-3">
-        <label for="temporadas" class="col-form-label" style="padding: 2%;">Temporadas</label>
+        <label class="col-form-label" style="padding: 2%;">Temporadas</label>
         <select class="form-select" id="temporada" aria-label="Default select example" v-model="temporada">
           <option value="" selected>Selecione a temporada</option>
           <option v-for="temporada in temporadas" :value="temporada.id" :key="temporada.id">{{temporada.nome}}</option>
@@ -470,7 +480,7 @@
                 <div class="modal-body">
                     <form>
                         <div class="mb-3">
-                        <label for="recipient-name" class="col-form-label">Nome</label>
+                        <label class="col-form-label">Nome</label>
                         <input type="text" name="nome" v-model="jogador_nome" class="form-control" id="nome"/>
                         </div>
                     </form>
@@ -493,7 +503,7 @@
               <div class="modal-body">
                 <div class="row">
                   <div class="col col-lg-3">
-                    <label for="temporadas" class="col-form-label">Temporadas</label>
+                    <label class="col-form-label">Temporadas</label>
                     <select class="form-select" id="temporada_estatistica_id" v-model="temporada_estatistica_id">
                       <option value="" selected>Selecione a temporada</option>
                       <option v-for="temporada in temporadas" :value="temporada.id" :key="temporada.id">{{temporada.nome}}</option>
@@ -552,29 +562,29 @@
         <div class="modal-body">
           <div class="row">
             <div class="col col-lg-3">
-              <label for="temporadas" class="col-form-label">Temporadas</label>
+              <label class="col-form-label">Temporadas</label>
               <select class="form-select" id="temporada_gols_id" >
                 <option value="" selected>Selecione a temporada</option>
                 <option v-for="temporada in temporadas" :value="temporada.id" :key="temporada.id">{{temporada.nome}}</option>
               </select>
             </div>
             <div class="col col-lg-2">
-              <label for="gols" class="col-form-label">Quantidade de Gols</label>
+              <label class="col-form-label">Quantidade de Gols</label>
               <input type="number" name="gols" class="form-control" id="gols"/>
             </div>
             <div class="col col-lg-2">
-              <label for="golsSofridos" class="col-form-label">Gols Sofridos</label>
+              <label class="col-form-label">Gols Sofridos</label>
               <input type="number" name="golsSofridos" class="form-control" id="golsSofridos"/>
             </div>
             <div class="col col-lg-3">
-              <label for="gols" class="col-form-label">Time</label>
+              <label class="col-form-label">Time</label>
               <select class="form-select" id="equipe">
                 <option value="" selected>Selecione o time</option>
                 <option v-for="equipe in equipes" :value="equipe.id" :key="equipe.id">{{equipe.nome}}</option>
               </select>
             </div>
             <div class="col col-lg-2">
-              <label for="data" class="col-form-label">Data</label>
+              <label class="col-form-label">Data</label>
               <input type="date" name="data" class="form-control" id="data"/>
             </div>
           </div><br>
@@ -666,6 +676,7 @@
 <style scoped>
     .botoes{
         padding: 3px;
+        font-size: 12px;
     }
 
     .bi-pencil-fill{
@@ -690,6 +701,13 @@
       color: #ccc;
     }
     .jogador_excluir{
+      cursor: pointer;
+    }
+
+    .bi-filetype-pdf{
+      color: red;
+      font-size: 25px;
+      /* margin-top: 200px; */
       cursor: pointer;
     }
 </style>

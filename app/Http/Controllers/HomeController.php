@@ -8,6 +8,7 @@ use App\Models\Jogador;
 use App\Models\JogadorGol;
 use App\Models\Temporadas;
 use App\Models\Equipe;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class HomeController extends Controller
 {
@@ -41,7 +42,8 @@ class HomeController extends Controller
 
     public function getJogadores(Request $request)
     {
-        $jogadores = Jogador::get();
+        // $jogadores = Jogador::get();
+        $jogadores = $this->getJogadoresPorTemporada($request->temporada_id);
         foreach ($jogadores as $jogador) {
             $jogador_estatistica = $this->getJogadorEstatisticas($jogador->id, $request->temporada_id);
             $jogador->gols = $jogador_estatistica->gols;
@@ -153,6 +155,28 @@ class HomeController extends Controller
         $data->golsTimePreto = $this->golsTimePreto($request->temporada_id);
         $data->golsTotal = $data->golsTimeAzul+$data->golsTimePreto;
         return response()->json($data);
+    }
+
+    public function getEstatisticasPdf(Request $request)
+    {
+        $jogador_gols = JogadorGol::select(DB::raw('day(data) as dia, month(data) as mes , year(data) as ano, temporada_id'))->join('equipes As e', 'e.id', '=', 'jogador_gols.equipe_id')
+        ->whereIn('e.id',[3,4]);
+
+        if($request->temporada_id)
+            $jogador_gols = $jogador_gols->where('temporada_id', $request->temporada_id);
+
+        $jogador_gols = $jogador_gols->groupBy('dia','mes','ano', 'temporada_id')->get();
+
+        $data = new class{};
+        $data->vitoriasTimeAzul = $this->vitoriasTimeAzul($jogador_gols);
+        $data->derrotasTimeAzul = $this->derrotasTimeAzul($jogador_gols);
+        $data->vitoriasTimePreto = $this->vitoriasTimePreto($jogador_gols);
+        $data->derrotasTimePreto = $this->derrotasTimePreto($jogador_gols);
+        $data->empates = $this->empates($jogador_gols);
+        $data->golsTimeAzul = $this->golsTimeAzul($request->temporada_id);
+        $data->golsTimePreto = $this->golsTimePreto($request->temporada_id);
+        $data->golsTotal = $data->golsTimeAzul+$data->golsTimePreto;
+        return $data;
     }
 
     public function gols($dia, $mes, $ano, $equipe_id, $temporada_id)
@@ -301,5 +325,31 @@ class HomeController extends Controller
         $data->jogador_gols = $this->getGolsJogador($request);
         $data->jogadores = $this->getJogadores($request);
         return response()->json($data);
+    }
+
+    public function getJogadoresPorTemporada($temporada_id)
+    {
+        $jogadores = Jogador::select('jogadores.id', 'jogadores.nome')
+        ->join('jogador_gols As jg', 'jg.jogador_id', '=', 'jogadores.id');
+
+        if($temporada_id)
+            $jogadores = $jogadores->where('jg.temporada_id', $temporada_id);
+
+        $jogadores = $jogadores->groupBy('jogadores.id')
+        ->get();
+        return $jogadores;
+    }
+
+    public function gerarPdf(Request $request)
+    {
+        $listaGols = $this->getJogadores($request);
+        $estatisticas = $this->getEstatisticasPdf($request);
+
+        $html = view('listaGolsPdf',
+		[
+			'listaGols' => $listaGols,
+			'estatisticas' => $estatisticas
+		])->render();
+        return PDF::loadHTML($html)->setPaper('a4','landscape')->stream('Lista de Gols');
     }
 }

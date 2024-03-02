@@ -26,4 +26,12 @@ Route::post('updateGol', 'App\Http\Controllers\HomeController@updateGol');
 Route::get('getEstatisticas', 'App\Http\Controllers\HomeController@getEstatisticas');
 Route::post('deleteJogador', 'App\Http\Controllers\HomeController@deleteJogador');
 Route::post('deleteGols', 'App\Http\Controllers\HomeController@deleteGols');
+Route::get('listaGolsPdf', 'App\Http\Controllers\HomeController@gerarPdf');
+Route::get('financeiro', 'App\Http\Controllers\FinanceiroController@index');
+Route::get('getDadosFinanceiro', 'App\Http\Controllers\FinanceiroController@getDados');
+Route::post('storeUpdateContribuicao', 'App\Http\Controllers\FinanceiroController@storeUpdateContribuicao');
+Route::post('storeUpdateFinanceiroLanacamento', 'App\Http\Controllers\FinanceiroController@storeUpdateFinanceiroLanacamento');
+Route::get('getContribuicoes', 'App\Http\Controllers\FinanceiroController@getContribuicoes');
+Route::get('financeiroPdf', 'App\Http\Controllers\FinanceiroController@gerarPdf');
+
 
