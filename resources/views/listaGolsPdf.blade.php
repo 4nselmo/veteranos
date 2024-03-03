@@ -1,35 +1,4 @@
 <p class="titulo">Lista de Gols</p>
-<div class="row">
-    <table class="tabela" width="100%">
-        <tr class="cabecalho-header">
-            <td>Times</td>
-            <td>Vitórias</td>
-            <td>Derrotas</td>
-            <td>Empates</td>
-            <td>Gols Pro</td>
-        </tr>
-        <tr class="quase-branco equipes">
-            <td colspan="3"></td>
-            <td style="text-align: right">Total:</td>
-            <td>{{$estatisticas->golsTotal}}</td>
-        </tr>
-        <tr class="menos-branco">
-            <td class="equipes">Time Preto</td>
-            <td>{{$estatisticas->vitoriasTimePreto}}</td>
-            <td>{{$estatisticas->derrotasTimePreto}}</td>
-            <td>{{$estatisticas->empates}}</td>
-            <td>{{$estatisticas->golsTimePreto}}</td>
-        </tr>
-        <tr class="quase-branco">
-            <td class="equipes">Time Azul</td>
-            <td>{{$estatisticas->vitoriasTimeAzul}}</td>
-            <td>{{$estatisticas->derrotasTimeAzul}}</td>
-            <td>{{$estatisticas->empates}}</td>
-            <td>{{$estatisticas->golsTimeAzul}}</td>
-        </tr>
-    </table>
-</div>
-<br>
 <div class="row"> 
     <div class="col col-lg-12">
         <table class="tabela" width="100%">
@@ -68,6 +37,38 @@
         </table>
         </div>
     </div>
+    <br>
+    <p class="titulo">Estatísticas</p>
+    <div class="row">
+    <table class="tabela" width="100%">
+        <tr class="cabecalho-header">
+            <td>Times</td>
+            <td>Vitórias</td>
+            <td>Derrotas</td>
+            <td>Empates</td>
+            <td>Gols Pro</td>
+        </tr>
+        <tr class="quase-branco equipes">
+            <td colspan="3"></td>
+            <td style="text-align: right">Total:</td>
+            <td>{{$estatisticas->golsTotal}}</td>
+        </tr>
+        <tr class="menos-branco">
+            <td class="equipes">Time Preto</td>
+            <td>{{$estatisticas->vitoriasTimePreto}}</td>
+            <td>{{$estatisticas->derrotasTimePreto}}</td>
+            <td>{{$estatisticas->empates}}</td>
+            <td>{{$estatisticas->golsTimePreto}}</td>
+        </tr>
+        <tr class="quase-branco">
+            <td class="equipes">Time Azul</td>
+            <td>{{$estatisticas->vitoriasTimeAzul}}</td>
+            <td>{{$estatisticas->derrotasTimeAzul}}</td>
+            <td>{{$estatisticas->empates}}</td>
+            <td>{{$estatisticas->golsTimeAzul}}</td>
+        </tr>
+    </table>
+</div>
 
 <style scoped>
     .tabela{
