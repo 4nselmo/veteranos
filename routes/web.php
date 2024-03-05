@@ -33,5 +33,9 @@ Route::post('storeUpdateContribuicao', 'App\Http\Controllers\FinanceiroControlle
 Route::post('storeUpdateFinanceiroLanacamento', 'App\Http\Controllers\FinanceiroController@storeUpdateFinanceiroLanacamento');
 Route::get('getContribuicoes', 'App\Http\Controllers\FinanceiroController@getContribuicoes');
 Route::get('financeiroPdf', 'App\Http\Controllers\FinanceiroController@gerarPdf');
+Route::get('jogos', 'App\Http\Controllers\JogosController@index');
+Route::get('getDadosGols', 'App\Http\Controllers\JogosController@getDados');
+Route::get('getEstatisticasJogos', 'App\Http\Controllers\JogosController@getEstatisticasJogos');
+Route::get('getDetalhes', 'App\Http\Controllers\JogosController@getDetalhes');
 
 

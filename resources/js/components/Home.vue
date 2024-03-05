@@ -380,6 +380,9 @@
             }
             window.open('listaGolsPdf?'+ $.param(data)); 
         },
+        estatisticasJogos(){
+            window.open('jogos'); 
+        },
 
       },
 
@@ -415,6 +418,11 @@
         <span class="botoes">
           <button  type = "button" class="btn btn-primary" id="myInput" v-on:click="openModalEstatisticas()">
           ESTATISTICAS
+          </button>
+        </span>
+        <span class="botoes">
+          <button  type = "button" class="btn btn-primary" id="myInput" v-on:click="estatisticasJogos()">
+          ESTATISTICAS JOGOS
           </button>
         </span>
         <span class="botoes">
@@ -550,7 +558,7 @@
               </div>
             </div>
           </div>
-        </div>
+    </div>
 
   <div class="modal fade" id="golsModal" tabindex="-1" aria-labelledby="golsModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable modal-xl" >

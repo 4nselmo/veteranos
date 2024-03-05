@@ -3,7 +3,7 @@
     <div class="col col-lg-12">
         <table class="tabela" width="100%">
             <tr class="cabecalho-header">
-                <td>Posição</td>
+                <td width="1%">#</td>
                 <td>Nome</td>
                 <td>Gols Marcados</td>
                 <td>Gols Sofridos</td>
