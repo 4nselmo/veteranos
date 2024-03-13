@@ -35,7 +35,7 @@ class JogosController extends Controller
         if($request->temporada_id)
             $datas_jogos = $datas_jogos->where('temporada_id', $request->temporada_id);
 
-        $datas_jogos = $datas_jogos->groupBy('data')->get();
+        $datas_jogos = $datas_jogos->groupBy('data')->orderBy('data', 'desc')->get();
 
         foreach ($datas_jogos as $data) {
             $data->golsTimePreto = $this->getGolsTimePorDia($data->data, 4);
