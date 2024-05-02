@@ -38,8 +38,8 @@ class JogosController extends Controller
         $datas_jogos = $datas_jogos->groupBy('data')->orderBy('data', 'desc')->get();
 
         foreach ($datas_jogos as $data) {
-            $data->golsTimePreto = $this->getGolsTimePorDia($data->data, 4);
-            $data->golsTimeAzul = $this->getGolsTimePorDia($data->data, 3);
+            $data->golsTimePreto = (int)$this->getGolsTimePorDia($data->data, 4);
+            $data->golsTimeAzul = (int)$this->getGolsTimePorDia($data->data, 3);
             $data->data_formatada = date('d/m/Y',strtotime($data->data));
         }
         return $datas_jogos;

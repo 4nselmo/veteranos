@@ -27,8 +27,8 @@ class FinanceiroController extends Controller
         $obj->tipoMovimentacoes = $this->getTiposMovimentacao($request);
         $obj->contribuicoes = $this->getContribuicoes($request);
         $obj->financeiroLancamentos = $this->getFinanceiroLancamentos($request);
-        $obj->valor_total_entradas = $this->getValorTotalEntradas();
-        $obj->valor_total_saidas = $this->getValorTotalSaidas();
+        $obj->valor_total_entradas = $this->getValorTotalEntradas($request);
+        $obj->valor_total_saidas = $this->getValorTotalSaidas($request);
         return $obj;
     }
 
@@ -81,9 +81,13 @@ class FinanceiroController extends Controller
         return $this->getFinanceiroLancamentos($request);
     }
 
-    public function getFinanceiroLancamentos()
+    public function getFinanceiroLancamentos(Request $request)
     {
-        $lancamentos = FinanceiroLancamento::get();
+        $lancamentos = DB::table('financeiro_lancamentos');
+        if($request->contribuicaoFiltro)
+            $lancamentos = $lancamentos->where('contribuicao_id', $request->contribuicaoFiltro);
+
+        $lancamentos = $lancamentos->get();
         foreach ($lancamentos as $lancamento) {
             $lancamento->contribuinte = $this->getContribuinte($lancamento->jogador_id);
             $lancamento->contribuicao = $this->getContribuicao($lancamento->contribuicao_id);
@@ -112,12 +116,12 @@ class FinanceiroController extends Controller
         return $tipoMovimentacao->nome;
     }
 
-    public function gerarPdf()
+    public function gerarPdf(Request $request)
     {
-        $lancamentos = $this->getFinanceiroLancamentos();
-        $entradas = $this->getValorTotalEntradas();
-        $saidas = $this->getValorTotalSaidas();
-        $saldo = $this->getSaldo();
+        $lancamentos = $this->getFinanceiroLancamentos($request);
+        $entradas = $this->getValorTotalEntradas($request);
+        $saidas = $this->getValorTotalSaidas($request);
+        $saldo = $this->getSaldo($request);
 
         // $pdf = PDF::loadView('financeiroPdf', compact('lancamentos'));
         $html = view('financeiroPdf',
@@ -131,20 +135,30 @@ class FinanceiroController extends Controller
         // return $pdf->setPaper('a4')->stream('Financeiro');
     }
 
-    public function getValorTotalEntradas()
+    public function getValorTotalEntradas($request)
     {
-        $valor_total_entradas = FinanceiroLancamento::where('tipo_movimentacao_id', 1)->sum('valor');
+        $valor_total_entradas = FinanceiroLancamento::where('tipo_movimentacao_id', 1);
+
+        if($request->contribuicao)
+            $valor_total_entradas = $valor_total_entradas->where('contribuicao_id', $request->contribuicao);
+
+        $valor_total_entradas = $valor_total_entradas->sum('valor');
         return $valor_total_entradas;
     }
 
-    public function getValorTotalSaidas()
+    public function getValorTotalSaidas($request)
     {
-        $valor_total_saidas = FinanceiroLancamento::where('tipo_movimentacao_id', 2)->sum('valor');
+        $valor_total_saidas = FinanceiroLancamento::where('tipo_movimentacao_id', 2);
+
+        if($request->contribuicao)
+            $valor_total_saidas = $valor_total_saidas->where('contribuicao_id', $request->contribuicao);
+        
+        $valor_total_saidas = $valor_total_saidas->sum('valor');
         return $valor_total_saidas;
     }
-    public function getSaldo()
+    public function getSaldo($request)
     {
-        $saldo = $this->getValorTotalEntradas()-$this->getValorTotalSaidas();
+        $saldo = $this->getValorTotalEntradas($request)-$this->getValorTotalSaidas($request);
         return $saldo;
     }
 }

@@ -37,5 +37,6 @@ Route::get('jogos', 'App\Http\Controllers\JogosController@index');
 Route::get('getDadosGols', 'App\Http\Controllers\JogosController@getDados');
 Route::get('getEstatisticasJogos', 'App\Http\Controllers\JogosController@getEstatisticasJogos');
 Route::get('getDetalhes', 'App\Http\Controllers\JogosController@getDetalhes');
+Route::get('getFinanceiroLancamentos', 'App\Http\Controllers\FinanceiroController@getFinanceiroLancamentos');
 
 

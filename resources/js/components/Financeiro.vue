@@ -13,7 +13,8 @@
           contribuicao:null,
           financeiroLancamentos:[],
           financeiroLancamento:'',
-          disable_store:false
+          disable_store:false,
+          contribuicaoFiltro:''
 
           }
       },
@@ -241,6 +242,7 @@
         {
           const data = {
             _token: $('meta[name="csrf-token"]').attr('content'),
+            contribuicaoFiltro: this.contribuicaoFiltro
           }
           jQuery.get('getFinanceiroLancamentos', data, res => {
             this.financeiroLancamentos = res;
@@ -281,14 +283,20 @@
        },
 
        financeiroPdf(){
-            window.open('financeiroPdf'); 
+        const data = {
+          contribuicao: this.contribuicaoFiltro
+        }
+            window.open('financeiroPdf?'+ $.param(data)); 
         },
 
       },
 
       watch:
       {
-
+        contribuicaoFiltro()
+        {
+          this.getFinanceiroLancamentos();
+        },
       },
 
       filters:{
@@ -322,7 +330,16 @@
       </div>
   </div>
   <br>
-
+  <div class="row">
+    <div class="col col-lg-3">
+        <label class="col-form-label" style="padding: 2%;">Movimentação</label>
+        <select class="form-select" id="contribuicaoFiltro" aria-label="Default select example" v-model="contribuicaoFiltro">
+          <option value="" selected>Selecione a movimentação</option>
+          <option v-for="contribuicao in contribuicoes" :value="contribuicao.id" :key="contribuicao.id">{{contribuicao.nome}}</option>
+        </select>
+    </div>
+  </div>
+  <br>
   <div class="row"> 
     <div class="col col-lg-12">
         <table class="table table-striped">
